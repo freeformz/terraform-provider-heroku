@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/heroku/heroku-go/v3"
 	"log"
+	"reflect"
 )
 
 // getAppName extracts the app attribute generically from a Heroku resource.
@@ -43,8 +44,18 @@ func doesHerokuAppExist(appName string, client *heroku.Service) (*heroku.App, er
 	return app, nil
 }
 
-func getAppUuid(appName string, client *heroku.Service) string {
-	app, _ := doesHerokuAppExist(appName, client)
+func SliceExists(slice interface{}, item interface{}) bool {
+	s := reflect.ValueOf(slice)
 
-	return app.ID
+	if s.Kind() != reflect.Slice {
+		panic("SliceExists() given a non-slice type")
+	}
+
+	for i := 0; i < s.Len(); i++ {
+		if s.Index(i).Interface() == item {
+			return true
+		}
+	}
+
+	return false
 }
